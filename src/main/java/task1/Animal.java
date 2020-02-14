@@ -18,6 +18,22 @@ public class Animal implements Serializable {
         this.food = food;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public List<Food> getFood() {
+        return food;
+    }
+
     @Override
     public String toString() {
         return "Person{" +

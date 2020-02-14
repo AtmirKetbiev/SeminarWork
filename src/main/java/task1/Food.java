@@ -13,6 +13,16 @@ public class Food implements Serializable {
         this.count = count;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

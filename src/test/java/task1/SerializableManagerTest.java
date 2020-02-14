@@ -13,7 +13,6 @@ public class SerializableManagerTest {
     List<Animal> animalList = Arrays.asList(new Animal("волк", Type.MAMMAL, 7, Arrays.asList(new Food("rabbit", 2))));
     List<Animal> animalList2 = Arrays.asList(new Animal("лиса", Type.MAMMAL, 5, Arrays.asList(new Food("rabbit", 1))));
 
-
     @Test
     public void serializable() throws IOException, ClassNotFoundException {
         List<Animal> animals = new ArrayList<Animal>();
@@ -23,9 +22,24 @@ public class SerializableManagerTest {
     }
 
     @Test
+    public void myTest() throws IOException, ClassNotFoundException {
+        List<Animal> animals = new ArrayList<Animal>();
+        animals.add(new Animal("волк", Type.MAMMAL, 7, Arrays.asList(new Food("rabbit", 2))));
+        SerializableManager.myOutput(animals, "animalsList");
+        //List<Animal> animalList11 =SerializableManager.myInput("animalsList");
+        assertEquals(animalList, SerializableManager.myInput("animalsList"));
+    }
+
+    @Test
     public void TestEmpty() throws IOException, ClassNotFoundException {
         SerializableManager.serializable(Collections.emptyList(), "test");
         assertEquals(Collections.emptyList(), SerializableManager.deserializer("test"));
+    }
+
+    @Test
+    public void myTestEmpty() throws IOException, ClassNotFoundException {
+        SerializableManager.myOutput(Collections.emptyList(), "test");
+        assertEquals(Collections.emptyList(), SerializableManager.myInput("test"));
     }
 
     @Test

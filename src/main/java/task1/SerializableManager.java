@@ -4,11 +4,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SerializableManager {
-    private List<Animal> animals;
-    private String file;
 
     public SerializableManager() {
     }
@@ -32,8 +31,50 @@ public class SerializableManager {
         return animalList;
     }
 
-    static public void mySerializable(List<Animal> animals, String file) throws IOException, ClassNotFoundException {
+    static public void myOutput(List<Animal> animals, String file) throws IOException, ClassNotFoundException {
         Path path = Paths.get(file);
+        try (DataOutputStream dataOutputStream = new DataOutputStream(Files.newOutputStream(path))) {
+            for (Animal animal : animals) {
+                dataOutputStream.writeChars(animal.getName());
+                dataOutputStream.writeInt(animal.getAge());
+                dataOutputStream.writeChars(animal.getType().name());
+                dataOutputStream.writeInt(animal.getFood().size());
+                for (Food food : animal.getFood()) {
+                    dataOutputStream.writeChars(food.getName());
+                    dataOutputStream.writeInt(food.getCount());
+                }
+            }
+        }
+    }
+
+    static public List<Animal> myInput(String file) throws IOException, ClassNotFoundException {
+        Path path = Paths.get(file);
+        try (DataInputStream dataInputStream = new DataInputStream(Files.newInputStream(path))) {
+            String name;
+            Type type;
+            int age;
+            int foodCount;
+
+            String nameFood;
+            int coutFood;
+            List<Animal> animal = new ArrayList<>();
+
+            for (int i = 0; i <= dataInputStream.readInt(); i++) {
+                name = dataInputStream.readUTF();
+                age = dataInputStream.readInt();
+                type = Type.valueOf(dataInputStream.readUTF());
+                foodCount = dataInputStream.readInt();
+                List<Food> food = new ArrayList<>();
+                for (int j = 0; j <= foodCount; j++) {
+                    nameFood = dataInputStream.readUTF();
+                    coutFood = dataInputStream.readInt();
+                    food.add(new Food(nameFood, coutFood));
+                }
+
+                animal.add(new Animal(name, type, age, food));
+            }
+            return animal;
+        }
 
     }
 
