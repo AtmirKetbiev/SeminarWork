@@ -3,48 +3,52 @@ package task3;
 import java.util.Comparator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.PriorityBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class MyExecutor implements Executor {
 
     private PriorityBlockingQueue<Thread> priorityBlockingQueue = new PriorityBlockingQueue(1, new ThreadComparator());
     private int poolVolume;
-    private int numberOfThreads;
-    private Object o;
+    private Object o = new Object();
+    private int cout = 2;
 
-    public MyExecutor(int poolVolume, int numberOfThreads) {
+    public MyExecutor(int poolVolume) {
         this.poolVolume = poolVolume;
-        this.numberOfThreads = numberOfThreads;
-        o = new Object();
     }
 
     @Override
     public void execute(Runnable runnable) {
-        Thread thread = new Thread(() -> {
-            runnable.run();
-            /*synchronized(o) {
-                o.notify();
-            }*/
-        });
-
-        priorityBlockingQueue.add(thread);
-        run();
-    }
-
-    private void run() {
-        if (priorityBlockingQueue.size() < poolVolume && priorityBlockingQueue.size() < numberOfThreads) {
-            return;
-        }
-        for (int i = 0; i < poolVolume; i++) {
-            try {
-                Thread t = priorityBlockingQueue.poll(1, TimeUnit.SECONDS);
-                t.run();
-                System.out.println(t.getName());
-                //o.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        cout++;
+        if (priorityBlockingQueue.size() == poolVolume) {
+            synchronized (o) {
+                try {
+                    System.out.println("in queue" + cout);
+                    o.wait();
+                    System.out.println("out queue" + cout);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+        Thread thread = new Thread(runnable) {
+            @Override
+            public void run() {
+                runnable.run();
+                try {
+                    System.out.println("Start " + Thread.currentThread().getName());
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                priorityBlockingQueue.poll();
+                synchronized (o) {
+                    o.notify();
+                }
+            }
+        };
+
+        priorityBlockingQueue.add(thread);
+        thread.start();
     }
 }
 
