@@ -50,7 +50,7 @@ public class MyExecutorTest {
     public void moreThreads() throws IOException, ClassNotFoundException {
 
         int poolVolume = 5;
-        int numberOfThreads = 2 * poolVolume + 1;
+        int numberOfThreads = 2 * poolVolume;
 
         MyExecutor myExecutor = new MyExecutor(poolVolume, numberOfThreads);
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);

@@ -28,10 +28,10 @@ public class MyExecutor implements Executor {
         });
 
         priorityBlockingQueue.add(thread);
-        Run();
+        run();
     }
 
-    private void Run() {
+    private void run() {
         if (priorityBlockingQueue.size() < poolVolume && priorityBlockingQueue.size() < numberOfThreads) {
             return;
         }

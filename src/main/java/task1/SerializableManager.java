@@ -49,15 +49,15 @@ public class SerializableManager {
 
     static public List<Animal> myInput(String file) throws IOException, ClassNotFoundException {
         Path path = Paths.get(file);
-        try (DataInputStream dataInputStream = new DataInputStream(Files.newInputStream(path))) {
-            String name;
-            Type type;
-            int age;
-            int foodCount;
+        List<Animal> animal = new ArrayList<>();
+        String name;
+        Type type;
+        int age;
+        int foodCount;
+        String nameFood;
+        int coutFood;
 
-            String nameFood;
-            int coutFood;
-            List<Animal> animal = new ArrayList<>();
+        try (DataInputStream dataInputStream = new DataInputStream(Files.newInputStream(path))) {
 
             for (int i = 0; i <= dataInputStream.readInt(); i++) {
                 name = dataInputStream.readUTF();

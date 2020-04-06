@@ -16,9 +16,10 @@ public class SerializableManagerTest {
     @Test
     public void serializable() throws IOException, ClassNotFoundException {
         List<Animal> animals = new ArrayList<Animal>();
-        animals.add(new Animal("волк", Type.MAMMAL, 7, Arrays.asList(new Food("rabbit", 2))));
-        SerializableManager.serializable(animals, "animalsList");
-        assertEquals(animalList, SerializableManager.deserializer("animalsList"));
+        animals.add(new Animal("волк", Type.MAMMAL, 7,
+                Arrays.asList(new Food("rabbit", 2))));
+        SerializableManager.myOutput(animals, "animalsList");
+        assertEquals(animals, SerializableManager.myInput("animalsList"));
     }
 
     @Test
