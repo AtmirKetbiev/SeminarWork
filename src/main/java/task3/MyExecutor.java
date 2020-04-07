@@ -6,10 +6,10 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 public class MyExecutor implements Executor {
 
-    private PriorityBlockingQueue<Thread> priorityBlockingQueue = new PriorityBlockingQueue(1, new ThreadComparator());
+    private PriorityBlockingQueue<Runnable> priorityBlockingQueue = new PriorityBlockingQueue(1, new ThreadComparator());
     private int poolVolume;
     private Object o = new Object();
-    private int cout = 2;
+    private int cout = 0;
 
     public MyExecutor(int poolVolume) {
         this.poolVolume = poolVolume;
@@ -17,38 +17,34 @@ public class MyExecutor implements Executor {
 
     @Override
     public void execute(Runnable runnable) {
-        cout++;
-        if (priorityBlockingQueue.size() == poolVolume) {
-            synchronized (o) {
-                try {
-                    System.out.println("in queue" + cout);
-                    o.wait();
-                    System.out.println("out queue" + cout);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        priorityBlockingQueue.add(runnable);
+        synchronized (o) {
+            o.notify();
         }
-
-        Thread thread = new Thread(runnable) {
-            @Override
-            public void run() {
-                runnable.run();
-                try {
-                    System.out.println("Start " + Thread.currentThread().getName());
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        if (poolVolume > 0) {
+            cout++;
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    Thread.currentThread().setName("thread " + cout);
+                    while (!priorityBlockingQueue.isEmpty()) {
+                        priorityBlockingQueue.poll().run();
+                        System.out.println("Start " + Thread.currentThread().getName());
+                        try {
+                            Thread.sleep(1000);
+                            synchronized (o) {
+                                o.wait();
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
-                priorityBlockingQueue.poll();
-                synchronized (o) {
-                    o.notify();
-                }
-            }
-        };
+            };
 
-        priorityBlockingQueue.add(thread);
-        thread.start();
+            thread.start();
+        }
+        poolVolume--;
     }
 }
 

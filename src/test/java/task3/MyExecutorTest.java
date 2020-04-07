@@ -28,8 +28,8 @@ public class MyExecutorTest {
     @Test
     public void nThreads() {
 
-        int poolVolume = 3;
-        int numberOfThreads = 3;
+        int poolVolume = 6;
+        int numberOfThreads = 6;
 
         MyExecutor myExecutor = new MyExecutor(poolVolume);
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
@@ -37,7 +37,27 @@ public class MyExecutorTest {
         for(int i = 0; i < numberOfThreads; i++) {
             myExecutor.execute(countDownLatch::countDown);
             try {
-                countDownLatch.await(500, TimeUnit.MILLISECONDS);
+                countDownLatch.await(100, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        Assert.assertEquals(0, countDownLatch.getCount());
+    }
+
+    @Test
+    public void lessThreads() {
+
+        int poolVolume = 7;
+        int numberOfThreads = 4;
+
+        MyExecutor myExecutor = new MyExecutor(poolVolume);
+        CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
+
+        for(int i = 0; i < numberOfThreads; i++) {
+            myExecutor.execute(countDownLatch::countDown);
+            try {
+                countDownLatch.await(100, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -57,7 +77,7 @@ public class MyExecutorTest {
         for(int i = 0; i < numberOfThreads; i++) {
             myExecutor.execute(countDownLatch::countDown);
             try {
-                countDownLatch.await(100, TimeUnit.MILLISECONDS);
+                countDownLatch.await(300, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
