@@ -9,7 +9,7 @@ public class MyExecutor implements Executor {
     private PriorityBlockingQueue<Runnable> priorityBlockingQueue = new PriorityBlockingQueue(1, new ThreadComparator());
     private int poolVolume;
     private Object o = new Object();
-    private int cout = 0;
+    private int coutThread = 0;
 
     public MyExecutor(int poolVolume) {
         this.poolVolume = poolVolume;
@@ -22,15 +22,15 @@ public class MyExecutor implements Executor {
             o.notify();
         }
         if (poolVolume > 0) {
-            cout++;
+            coutThread++;
             Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    Thread.currentThread().setName("thread " + cout);
+                    Thread.currentThread().setName("thread " + coutThread);
                     while (!priorityBlockingQueue.isEmpty()) {
-                        priorityBlockingQueue.poll().run();
-                        System.out.println("Start " + Thread.currentThread().getName());
                         try {
+                            priorityBlockingQueue.take().run();
+                            System.out.println("Start " + Thread.currentThread().getName());
                             Thread.sleep(1000);
                             synchronized (o) {
                                 o.wait();
@@ -41,7 +41,6 @@ public class MyExecutor implements Executor {
                     }
                 }
             };
-
             thread.start();
         }
         poolVolume--;

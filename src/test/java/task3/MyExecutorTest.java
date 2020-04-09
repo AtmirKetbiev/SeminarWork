@@ -18,7 +18,7 @@ public class MyExecutorTest {
         CountDownLatch countDownLatch = new CountDownLatch(numberOfThreads);
         myExecutor.execute(countDownLatch::countDown);
         try {
-            countDownLatch.await(1100, TimeUnit.MILLISECONDS);
+            countDownLatch.await(100, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -66,9 +66,9 @@ public class MyExecutorTest {
     }
 
     @Test
-    public void moreThreads() {
+    public void moreThreads() throws InterruptedException {
 
-        int poolVolume = 4;
+        int poolVolume =3;
         int numberOfThreads = 3 * poolVolume + 1;
 
         MyExecutor myExecutor = new MyExecutor(poolVolume);
@@ -76,6 +76,7 @@ public class MyExecutorTest {
 
         for(int i = 0; i < numberOfThreads; i++) {
             myExecutor.execute(countDownLatch::countDown);
+            //Thread.sleep(1000);
             try {
                 countDownLatch.await(300, TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
